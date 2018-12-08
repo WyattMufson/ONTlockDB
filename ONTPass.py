@@ -4,6 +4,8 @@ from boa.builtins import concat
 ctx = GetContext()
 
 ONTPASSDICT = 'ONTPASSDICT'
+ONTPASSSET = 'ONTPASSSET'
+ONTPASSARRAY = 'ONTPASSARRAY'
 INVALID_ARGS = 'INVALID ARGUMENTS'
 INVALID_FUNC = 'INVALID FUNCTION'
 INVALID_USER = 'INVALID USER'
@@ -53,6 +55,43 @@ def getStorageDictKey(user):
     return concat(user, ONTPASSDICT)
 
 
+def getHasStored(user, key):
+    prefix = concat(user, ONTPASSSET)
+    hasStoredKey = concat(prefix, key)
+    hasStored = Get(ctx, hasStoredKey)
+    if hasStored:
+        return hasStored
+    else:
+        return False
+
+
+def keyList(user):
+    listKey = concat(user, ONTPASSARRAY)
+    lst = Get(ctx, listKey)
+    if lst:
+        return Deserialize(lst)
+    else:
+        return []
+
+
+def addToList(user, key):
+    listKey = concat(user, ONTPASSARRAY)
+    listKey.append(key)
+    serialized = Serialize(listKey)
+    Put(ctx, listKey, serialized)
+    return True
+
+
+def didStore(user, key, stored):
+    prefix = concat(user, ONTPASSSET)
+    hasStoredKey = concat(prefix, key)
+    Put(ctx, hasStoredKey, stored)
+    if stored:
+        added = addToList(user, key)
+        return added
+    return True
+
+
 def getStorageDict(user):
     storageDictKey = getStorageDictKey(user)
     serialized = Get(ctx, storageDictKey)
@@ -60,7 +99,6 @@ def getStorageDict(user):
         userDict = Deserialize(serialized)
         if userDict:
             return userDict
-
     return {}
 
 
@@ -70,18 +108,27 @@ def put(user, key, val):
     serialized = Serialize(storageDict)
     storageDictKey = getStorageDictKey(user)
     Put(ctx, storageDictKey, serialized)
-    return True
+    stored = didStore(user, key, True)
+    return stored
 
 
 def get(user, key):
     storageDict = getStorageDict(user)
-    item = storageDict[key]
-    return item
+    stored = getHasStored(user, key)
+    if stored:
+        item = storageDict[key]
+        return item
+    else:
+        return ""
 
 
 def delete(user, key):
     deleted = put(user, key, "")
-    return deleted
+    stored = didStore(user, key, False)
+    if stored:
+        return deleted
+    else:
+        return False
 
 
 def find(user):
