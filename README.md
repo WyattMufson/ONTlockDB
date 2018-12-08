@@ -1,35 +1,27 @@
-# ONTPassDB
+# ONTlockDB
 Simple storage database built on Ontology
 
 ## How to use
 1) Store data (overwrites previous)
 
 ```
-put(key, val)
+put(val)
 ```
 
-Sets the value for `key` to be equal to `val`
+Sets the value for the user to be equal to `val`
 
 2) Get data
 
 ```
-get(key)
+get()
 ```
 
-Gets the value for `key`
+Gets the value for the user
 
 3) Delete data
 
 ```
-delete(key)
+delete()
 ```
 
-Delete the value for `key`
-
-4) Find data
-
-```
-find()
-```
-
-Returns a list of keys that can be looked up
+Delete the value for the user
