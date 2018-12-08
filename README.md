@@ -33,3 +33,15 @@ find()
 ```
 
 Returns a list of keys that can be looked up
+
+## Testing
+
+Install dependencies with:
+```
+pip install -r requirements.txt
+```
+
+Run tests with
+```
+python -m unittest discover ONTPassTests/
+```
