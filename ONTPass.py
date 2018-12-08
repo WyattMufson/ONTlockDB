@@ -1,10 +1,10 @@
-from boa.interop.System.Runtime import Log, CheckWitness
-from boa.interop.System.Storage import GetContext, Get, Put, Delete
+from boa.interop.System.Runtime import Log, CheckWitness, Serialize, Deserialize
+from boa.interop.System.Storage import GetContext, Get, Put
 from boa.builtins import concat
 ctx = GetContext()
 
 ONTPASSITEM = 'ONTPASSITEM'
-ONTPASSLIST = 'ONTPASSLIST'
+ONTPASSDICT = 'ONTPASSDICT'
 INVALID_ARGS = 'INVALID ARGUMENTS'
 INVALID_FUNC = 'INVALID FUNCTION'
 INVALID_USER = 'INVALID USER'
@@ -56,24 +56,44 @@ def getStorageItemKey(user, key):
     return storageItemKey
 
 
+def getStorageDictKey(user):
+    return concat(user, ONTPASSDICT)
+
+
+def getStorageDict(user):
+    storageDictKey = getStorageDictKey(user)
+    serialized = Get(ctx, storageDictKey)
+    if serialized:
+        userDict = Deserialize(serialized)
+        if userDict:
+            return userDict
+
+    return {}
+
+
 def put(user, key, val):
+    storageDict = getStorageDict(user)
     storageItemKey = getStorageItemKey(user, key)
-    Put(ctx, storageItemKey, val)
+    storageDict[storageItemKey] = val
+    serialized = Serialize(storageDict)
+    storageDictKey = getStorageDictKey(user)
+    Put(ctx, storageDictKey, serialized)
     return True
 
 
 def get(user, key):
+    storageDict = getStorageDict(user)
     storageItemKey = getStorageItemKey(user, key)
-    val = Get(ctx, storageItemKey)
-    return val
+    item = storageDict[storageItemKey]
+    return item
 
 
 def delete(user, key):
-    storageItemKey = getStorageItemKey(user, key)
-    Delete(ctx, storageItemKey)
-    return True
+    deleted = put(user, key, "")
+    return deleted
 
 
 def find(user):
-    # lst = getStorageList(caller)
-    return True
+    storageDict = getStorageDict(user)
+    serialized = Serialize(storageDict)
+    return serialized
