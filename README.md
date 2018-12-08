@@ -5,7 +5,7 @@ Simple storage database built on Ontology
 1) Store data (overwrites previous)
 
 ```
-set(key, val)
+put(key, val)
 ```
 
 Sets the value for `key` to be equal to `val`
