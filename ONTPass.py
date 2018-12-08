@@ -12,11 +12,11 @@ INVALID_FUNC = 'INVALID FUNCTION'
 def Main(operation, args):
     ctx = GetContext()
     caller = GetCallingScriptHash()
-    if operation == 'set':
+    if operation == 'put':
         if len(args) == 2:
             key = args[0]
             val = args[1]
-            return set(ctx, caller, key, val)
+            return put(ctx, caller, key, val)
         Log(INVALID_ARGS)
     elif operation == 'get':
         if len(args) == 1:
@@ -89,7 +89,7 @@ def getStorageItemKey(caller, key):
     return storageItemKey
 
 
-def set(ctx, caller, key, val):
+def put(ctx, caller, key, val):
     storageItemKey = getStorageItemKey(caller, key)
     Put(ctx, storageItemKey, val)
     added = addToStorageList(ctx, caller, key)
