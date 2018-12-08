@@ -3,7 +3,7 @@ from boa.interop.System.Storage import GetContext, Get, Put, Delete
 from boa.builtins import concat
 ctx = GetContext()
 
-ONTLOCK = 'ONTLOCK'
+ONTLOCK = 'ONTlockDB'
 INVALID_ARGS = 'INVALID ARGUMENTS'
 INVALID_FUNC = 'INVALID FUNCTION'
 INVALID_USER = 'INVALID USER'
