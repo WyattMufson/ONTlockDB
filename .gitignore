@@ -1,4 +1,5 @@
 *.pyo
 *.pyc
 .DS_Store
-ONTPassTests/fixtures/
+ONTPassTests
+requirements.txt
