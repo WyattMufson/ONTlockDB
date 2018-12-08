@@ -72,6 +72,17 @@ def addToStorageList(ctx, caller, key):
         return saved
 
 
+def removeFromStorageList(ctx, caller, key):
+    lst = getStorageList(ctx, caller)
+    index = indexOf(lst, key)
+    if index == -1:
+        return True
+    else:
+        del lst[index]
+        saved = saveList(ctx, caller, lst)
+        return saved
+
+
 def getStorageItemKey(caller, key):
     prefix = concat(caller, ONTPASSITEM)
     storageItemKey = concat(prefix, key)
@@ -81,7 +92,8 @@ def getStorageItemKey(caller, key):
 def set(ctx, caller, key, val):
     storageItemKey = getStorageItemKey(caller, key)
     Put(ctx, storageItemKey, val)
-    return True
+    added = addToStorageList(ctx, caller, key)
+    return added
 
 
 def get(ctx, caller, key):
@@ -92,7 +104,8 @@ def get(ctx, caller, key):
 def delete(ctx, caller, key):
     storageItemKey = getStorageItemKey(caller, key)
     Delete(ctx, storageItemKey)
-    return True
+    removed = removeFromStorageList(ctx, caller, key)
+    return removed
 
 
 def find(ctx, caller):
