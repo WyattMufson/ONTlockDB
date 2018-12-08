@@ -3,7 +3,6 @@ from boa.interop.System.Storage import GetContext, Get, Put
 from boa.builtins import concat
 ctx = GetContext()
 
-ONTPASSITEM = 'ONTPASSITEM'
 ONTPASSDICT = 'ONTPASSDICT'
 INVALID_ARGS = 'INVALID ARGUMENTS'
 INVALID_FUNC = 'INVALID FUNCTION'
@@ -50,12 +49,6 @@ def Main(operation, args):
     return False
 
 
-def getStorageItemKey(user, key):
-    prefix = concat(user, ONTPASSITEM)
-    storageItemKey = concat(prefix, key)
-    return storageItemKey
-
-
 def getStorageDictKey(user):
     return concat(user, ONTPASSDICT)
 
@@ -73,8 +66,7 @@ def getStorageDict(user):
 
 def put(user, key, val):
     storageDict = getStorageDict(user)
-    storageItemKey = getStorageItemKey(user, key)
-    storageDict[storageItemKey] = val
+    storageDict[key] = val
     serialized = Serialize(storageDict)
     storageDictKey = getStorageDictKey(user)
     Put(ctx, storageDictKey, serialized)
@@ -83,8 +75,7 @@ def put(user, key, val):
 
 def get(user, key):
     storageDict = getStorageDict(user)
-    storageItemKey = getStorageItemKey(user, key)
-    item = storageDict[storageItemKey]
+    item = storageDict[key]
     return item
 
 
