@@ -2,6 +2,7 @@ from boa.interop.System.Runtime import Log, Serialize, Deserialize
 from boa.interop.System.Storage import GetContext, Get, Put, Delete
 from boa.interop.System.ExecutionEngine import GetCallingScriptHash
 from boa.builtins import concat
+ctx = GetContext()
 
 ONTPASSITEM = 'ONTPASSITEM'
 ONTPASSLIST = 'ONTPASSLIST'
@@ -10,33 +11,32 @@ INVALID_FUNC = 'INVALID FUNCTION'
 
 
 def Main(operation, args):
-    ctx = GetContext()
     caller = GetCallingScriptHash()
     if operation == 'put':
         if len(args) == 2:
             key = args[0]
             val = args[1]
-            return put(ctx, caller, key, val)
+            return put(caller, key, val)
         Log(INVALID_ARGS)
     elif operation == 'get':
         if len(args) == 1:
             key = args[0]
-            return get(ctx, caller, key)
+            return get(caller, key)
         Log(INVALID_ARGS)
     elif operation == 'delete':
         if len(args) == 1:
             key = args[0]
-            return delete(ctx, caller, key)
+            return delete(caller, key)
         Log(INVALID_ARGS)
     elif operation == 'find':
         if len(args) == 0:
-            return find(ctx, caller)
+            return find(caller)
     else:
         Log(INVALID_FUNC)
     return False
 
 
-def getStorageList(ctx, caller):
+def getStorageList(caller):
     storageListKey = concat(caller, ONTPASSLIST)
     lst = Get(ctx, storageListKey)
     if lst:
@@ -54,32 +54,32 @@ def indexOf(lst, item):
     return -1
 
 
-def saveList(ctx, caller, lst):
+def saveList(caller, lst):
     storageListKey = concat(caller, ONTPASSLIST)
     serialzed = Serialize(lst)
     Put(ctx, storageListKey, serialzed)
     return True
 
 
-def addToStorageList(ctx, caller, key):
-    lst = getStorageList(ctx, caller)
+def addToStorageList(caller, key):
+    lst = getStorageList(caller)
     index = indexOf(lst, key)
     if index != -1:
         return True
     else:
         lst.append(key)
-        saved = saveList(ctx, caller, lst)
+        saved = saveList(caller, lst)
         return saved
 
 
-def removeFromStorageList(ctx, caller, key):
-    lst = getStorageList(ctx, caller)
+def removeFromStorageList(caller, key):
+    lst = getStorageList(caller)
     index = indexOf(lst, key)
     if index == -1:
         return True
     else:
         del lst[index]
-        saved = saveList(ctx, caller, lst)
+        saved = saveList(caller, lst)
         return saved
 
 
@@ -89,25 +89,25 @@ def getStorageItemKey(caller, key):
     return storageItemKey
 
 
-def put(ctx, caller, key, val):
+def put(caller, key, val):
     storageItemKey = getStorageItemKey(caller, key)
     Put(ctx, storageItemKey, val)
-    added = addToStorageList(ctx, caller, key)
+    added = addToStorageList(caller, key)
     return added
 
 
-def get(ctx, caller, key):
+def get(caller, key):
     storageItemKey = getStorageItemKey(caller, key)
     return Get(ctx, storageItemKey)
 
 
-def delete(ctx, caller, key):
+def delete(caller, key):
     storageItemKey = getStorageItemKey(caller, key)
     Delete(ctx, storageItemKey)
-    removed = removeFromStorageList(ctx, caller, key)
+    removed = removeFromStorageList(caller, key)
     return removed
 
 
-def find(ctx, caller):
-    lst = getStorageList(ctx, caller)
+def find(caller):
+    lst = getStorageList(caller)
     return lst
