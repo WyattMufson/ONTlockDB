@@ -1,54 +1,88 @@
-from ontology.interop.System.Runtime import Log, CheckWitness
+from ontology.interop.System.Runtime import Log, CheckWitness, Serialize
 from ontology.interop.System.Storage import GetContext, Get, Put, Delete
 ctx = GetContext()
 
-ONTLOCK = 'ONTlockDB'
-
+ONTLOCK_ENTRY = 'ONTlockDB-ENTRY-KEY'
 
 def Main(operation, args):
     if operation == 'put':
-        Require(len(args) == 2)
-        user = args[0]
-        val = args[1]
-        return put(user, val)
+        Require(len(args) == 4)
+        address = args[0]
+        website = args[1]
+        username = args[2]
+        password = args[3]
+        return put(address, website, username, password)
     elif operation == 'get':
-        Require(len(args) == 1)
-        user = args[0]
-        return get(user)
+        Require(len(args) == 2)
+        address = args[0]
+        website = args[1]
+        return get(address, website)
     elif operation == 'delete':
-        Require(len(args) == 1)
-        user = args[0]
-        return delete(user)
+        Require(len(args) == 2)
+        address = args[0]
+        website = args[1]
+        return delete(address, website)
     return False
 
 
-def getStorageKey(user):
-    return concat(ONTLOCK, user) # pylint: disable=E0602
+def put(address, website, username, password):
+    RequireIsAddress(address)
+    RequireWitness(address)
+    RequireShorterThan(username, 65)
+    RequireShorterThan(password, 65)
+    return do_put(address, website, username, password)
+
+def get(address, website):
+    RequireIsAddress(address)
+    return do_get(address, website)
 
 
-def put(user, val):
-    RequireIsAddress(user)
-    RequireWitness(user)
-    storageKey = getStorageKey(user)
-    Put(ctx, storageKey, val)
+def delete(address, website):
+    RequireIsAddress(address)
+    RequireWitness(address)
+    return do_delete(address, website)
+
+
+def do_put(address, website, username, password):
+    storageKey = getStorageKey(address, website)
+    entry = {"username": username, "password": password}
+    Put(ctx, storageKey, Serialize(entry))
     return True
 
 
-def get(user):
-    RequireIsAddress(user)
-    storageKey = getStorageKey(user)
+def do_get(address, website):
+    storageKey = getStorageKey(address, website)
     storage = Get(ctx, storageKey)
-    if storage:
+    if storage is not None:
         return storage
     return ""
 
 
-def delete(user):
-    RequireIsAddress(user)
-    RequireWitness(user)
-    storageKey = getStorageKey(user)
+def do_delete(address, website):
+    storageKey = getStorageKey(address, website)
     Delete(ctx, storageKey)
     return True
+
+# Helpers
+
+def getStorageKey(address, website):
+    '''
+    Creates a unique storage key for the given address and website.
+
+    :param address: The user's address.
+    :param website: The website to store information for.
+    '''
+    return concat(concat(ONTLOCK_ENTRY, address), website) # pylint: disable=E0602
+
+
+def RequireShorterThan(string, length):
+    '''
+    Raises an exception if the string's length exceeds the limit.
+
+    :param string: The string to check.
+    :param length: The length limit.
+    '''
+    Require(len(string) < length, "String is too long")
 
 
 def RequireIsAddress(address):
