@@ -4,6 +4,7 @@ ctx = GetContext()
 
 ONTLOCK_ENTRY = 'ONTlockDB-ENTRY-KEY'
 
+
 def Main(operation, args):
     if operation == 'put':
         Require(len(args) == 4)
@@ -32,6 +33,7 @@ def put(address, website, username, password):
     RequireShorterThan(username, 65)
     RequireShorterThan(password, 65)
     return do_put(address, website, username, password)
+
 
 def get(address, website):
     RequireIsAddress(address)
