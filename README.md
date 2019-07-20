@@ -1,27 +1,27 @@
 # ONTlockDB
-Simple storage database built on Ontology
+Simple password manager smart contract built on Ontology
 
 ## How to use
 1) Store data (overwrites previous)
 
 ```
-put(val)
+put(address, website, username, password)
 ```
 
-Sets the value for the user to be equal to `val`
+Stores the `username` and `password` for `website` for the user with the wallet `address`.
 
 2) Get data
 
 ```
-get()
+get(address, website)
 ```
 
-Gets the value for the user
+Gets the `username` and `password` for `website` for the user with the wallet `address`.
 
 3) Delete data
 
 ```
-delete()
+delete(address, website)
 ```
 
-Delete the value for the user
+Deletes the `username` and `password` for `website` for the user with the wallet `address`.
