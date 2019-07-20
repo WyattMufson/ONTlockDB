@@ -28,18 +28,21 @@ def Main(operation, args):
 def put(address, website, username, password):
     RequireIsAddress(address)
     RequireWitness(address)
+    RequireShorterThan(website, 65)
     RequireShorterThan(username, 65)
     RequireShorterThan(password, 65)
     return do_put(address, website, username, password)
 
 def get(address, website):
     RequireIsAddress(address)
+    RequireShorterThan(website, 65)
     return do_get(address, website)
 
 
 def delete(address, website):
     RequireIsAddress(address)
     RequireWitness(address)
+    RequireShorterThan(website, 65)
     return do_delete(address, website)
 
 
