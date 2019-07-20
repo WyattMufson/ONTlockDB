@@ -1,6 +1,5 @@
-from boa.interop.System.Runtime import Log, CheckWitness
-from boa.interop.System.Storage import GetContext, Get, Put, Delete
-from boa.builtins import concat
+from ontology.interop.System.Runtime import Log, CheckWitness
+from ontology.interop.System.Storage import GetContext, Get, Put, Delete
 ctx = GetContext()
 
 ONTLOCK = 'ONTlockDB'
@@ -40,7 +39,7 @@ def Main(operation, args):
 
 
 def getStorageKey(user):
-    return concat(user, ONTLOCK)
+    return concat(user, ONTLOCK) # pylint: disable=E0602
 
 
 def put(user, val):
@@ -54,8 +53,7 @@ def get(user):
     storage = Get(ctx, storageKey)
     if storage:
         return storage
-    else:
-        return ""
+    return ""
 
 
 def delete(user):
