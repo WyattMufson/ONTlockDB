@@ -1,0 +1,3 @@
+[submodule "ontology-python-compiler"]
+	path = ontology-python-compiler
+	url = https://github.com/ontio/ontology-python-compiler
