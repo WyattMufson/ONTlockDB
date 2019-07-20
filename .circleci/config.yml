@@ -34,7 +34,7 @@ jobs:
 
       - run:
           name: Load Ontology
-          command: cp -r ontology-python-compiler/ontology ontology
+          command: cp -r ontology-python-compiler/ontology src/ontology
 
       # Download and cache dependencies
       - restore_cache:
